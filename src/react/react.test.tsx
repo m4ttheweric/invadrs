@@ -6,7 +6,9 @@ test("Sprite renders an inline svg with class, no size by default", () => {
   const html = renderToStaticMarkup(<Sprite id="matt" className="tui-avatar" />);
   expect(html).toContain("<svg");
   expect(html).toContain('class="tui-avatar"');
-  expect(html).not.toContain("width=");
+  const openingTag = html.split(">")[0];
+  expect(openingTag).not.toContain("width=");
+  expect(openingTag).not.toContain("height=");
   expect(html).toContain('aria-hidden');
 });
 

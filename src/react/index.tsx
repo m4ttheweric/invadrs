@@ -25,12 +25,12 @@ function renderCells(s: ResolvedSprite): ReactNode[] {
   const n = s.grid.length;
   if (s.background) {
     nodes.push(
-      <rect key="bg" x={-s.padding} y={-s.padding} style={{ width: n + s.padding * 2, height: n + s.padding * 2 }} fill={s.background} />,
+      <rect key="bg" x={-s.padding} y={-s.padding} width={n + s.padding * 2} height={n + s.padding * 2} fill={s.background} />,
     );
   }
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
-      if (s.grid[y]![x]) nodes.push(<rect key={`${x},${y}`} x={x} y={y} style={{ width: 1, height: 1 }} />);
+      if (s.grid[y]![x]) nodes.push(<rect key={`${x},${y}`} x={x} y={y} width={1} height={1} />);
     }
   }
   return nodes;
