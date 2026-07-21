@@ -9,7 +9,8 @@
     "declaration": true,
     "skipLibCheck": true,
     "types": ["bun-types"],
-    "noEmit": true
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "include": ["src"]
 }
