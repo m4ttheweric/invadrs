@@ -4,6 +4,25 @@
   "description": "Deterministic space-invaders-style pixel avatars from any string.",
   "type": "module",
   "license": "MIT",
+  "author": "Matthew Goodwin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4ttheweric/invadrs.git"
+  },
+  "homepage": "https://github.com/m4ttheweric/invadrs#readme",
+  "bugs": "https://github.com/m4ttheweric/invadrs/issues",
+  "keywords": [
+    "avatar",
+    "identicon",
+    "pixel",
+    "pixel-art",
+    "sprite",
+    "space-invaders",
+    "svg",
+    "deterministic",
+    "generative",
+    "react"
+  ],
   "sideEffects": false,
   "files": ["dist"],
   "exports": {
