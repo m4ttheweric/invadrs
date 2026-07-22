@@ -3,6 +3,8 @@
 Deterministic space-invaders-style pixel avatars from any string. Zero
 dependencies. Same id in, same avatar out, forever.
 
+**[🕹 Live demo & Storybook →](https://invadrs.pages.dev)**
+
 ![invadrs sample avatars — the invadr() and spawn() primitives, shown across every built-in palette](assets/preview.png)
 
 ```ts
