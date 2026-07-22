@@ -3,3 +3,6 @@ dist
 gallery/index.html
 .DS_Store
 assets/preview.svg
+
+*storybook.log
+storybook-static
