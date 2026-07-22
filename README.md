@@ -1,10 +1,10 @@
-# spritr
+# invadrs
 
 Deterministic space-invaders-style pixel avatars from any string. Zero
 dependencies. Same id in, same avatar out, forever.
 
 ```ts
-import { invadr, spawn, dataUri } from "spritr";
+import { invadr, spawn, dataUri } from "invadrs";
 
 invadr("matt");                       // hand-drawn creature, SVG string
 spawn("matt");                        // procedural creature, SVG string
@@ -32,7 +32,7 @@ Built-ins, each its own colour mood: `tokyoNight` (default, balanced rainbow),
 that follow your theme.
 
 ```ts
-import { palettes } from "spritr";
+import { palettes } from "invadrs";
 const brand = { colors: [...palettes.tokyoNight.colors, "#ff00aa"] };
 invadr("matt", { palette: brand });
 ```
@@ -40,7 +40,7 @@ invadr("matt", { palette: brand });
 ## React
 
 ```tsx
-import { Sprite, SpriteProvider } from "spritr/react";
+import { Sprite, SpriteProvider } from "invadrs/react";
 
 <Sprite id="matt" from="invadr" palette="css-vars" />
 <SpriteProvider palette="tokyoNight" size={20}>…</SpriteProvider>

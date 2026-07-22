@@ -14,7 +14,7 @@ function grid(kind: "invadr" | "spawn", palette: string): string {
 
 const sections = paletteNames.flatMap((p) => [grid("invadr", p), grid("spawn", p)]).join("\n");
 
-const html = `<!doctype html><meta charset="utf-8"><title>spritr gallery</title>
+const html = `<!doctype html><meta charset="utf-8"><title>invadrs gallery</title>
 <style>
   :root { color-scheme: light dark; --accent:#7aa2f7; --green:#9ece6a; --amber:#e0af68; --purple:#bb9af7; --cyan:#7dcfff; --red:#f7768e; }
   body { font-family: ui-monospace, monospace; margin: 2rem; }

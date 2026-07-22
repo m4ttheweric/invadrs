@@ -1,5 +1,5 @@
 {
-  "name": "spritr",
+  "name": "invadrs",
   "version": "0.1.0",
   "description": "Deterministic space-invaders-style pixel avatars from any string.",
   "type": "module",
