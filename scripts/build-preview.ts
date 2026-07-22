@@ -4,7 +4,7 @@
 // Regenerate the README image (SVG is gitignored scratch; the PNG is committed):
 //   bun run scripts/build-preview.ts
 //   rsvg-convert -z 2 -o assets/preview.png assets/preview.svg
-import { invadr, spawn, palettes } from "../src/index.ts";
+import { invadr, spawn, palettes, hashStr, INVADR_SPRITES } from "../src/index.ts";
 
 const CELL = 44;   // sprite px
 const GAP = 10;    // gap between sprites
@@ -13,7 +13,20 @@ const BG = "#16161e";       // dark card background (Tokyo Night bg)
 const FG = "#c0caf5";       // heading text
 const MUTED = "#565f89";    // labels
 
-const rowIds = ["ada", "linus", "grace", "alan", "margaret", "dennis", "ken", "barbara", "guido", "bjarne", "anders", "james"];
+/** One id per invadr sprite index, so a row shows all 16 distinct creatures. */
+function oneIdPerCreature(): string[] {
+  const n = INVADR_SPRITES.length;
+  const out: (string | null)[] = Array(n).fill(null);
+  let left = n;
+  for (let i = 0; left > 0 && i < 100000; i++) {
+    const id = `creature-${i}`;
+    const idx = hashStr(id) % n;
+    if (out[idx] === null) { out[idx] = id; left--; }
+  }
+  return out.map((v, i) => v ?? `c${i}`);
+}
+const invadrIds = oneIdPerCreature();
+const spawnIds = ["nova", "atlas", "echo", "iris", "sol", "wren", "pixel", "juno", "comet", "vega", "orion", "lyra", "astra", "zephyr", "quill", "nyx"];
 const paletteNames = Object.keys(palettes);
 const paletteIds = ["nova", "atlas", "echo", "iris", "sol", "wren"];
 
@@ -22,7 +35,7 @@ function place(svg: string, x: number, y: number): string {
   return `<g transform="translate(${x},${y})">${svg}</g>`;
 }
 
-const cols = rowIds.length;
+const cols = invadrIds.length;
 const width = PAD * 2 + cols * CELL + (cols - 1) * GAP;
 
 const parts: string[] = [];
@@ -44,8 +57,8 @@ function labeledRow(label: string, make: (id: string) => string, ids: string[]):
 }
 
 // Two primitives, default palette.
-labeledRow("invadr()  — 16 hand-drawn creatures", (id) => invadr(id, { size: CELL }), rowIds);
-labeledRow("spawn()   — procedural, unique per id", (id) => spawn(id, { size: CELL }), rowIds);
+labeledRow("invadr()  — all 16 hand-drawn creatures", (id) => invadr(id, { size: CELL }), invadrIds);
+labeledRow("spawn()   — procedural, unique per id", (id) => spawn(id, { size: CELL }), spawnIds);
 
 // One row per palette: same ids, so the palette mood is what changes.
 parts.push(`<text x="${PAD}" y="${y + 11}" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="${MUTED}">palettes</text>`);

@@ -49,7 +49,9 @@ export const AllPalettes: Story = {
   args: { size: 40 },
   argTypes: { palette: { table: { disable: true } }, id: { table: { disable: true } }, size: { table: { disable: true } }, padding: { table: { disable: true } } },
   render: () => {
-    const ids = sampleIds.slice(0, 6);
+    // Six ids spread across the roster, so each row shows six *distinct* creatures.
+    const every = idsForEverySprite();
+    const ids = [0, 3, 6, 9, 12, 15].map((i) => every[i]!);
     return (
       <div style={{ display: "grid", gap: 14 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
