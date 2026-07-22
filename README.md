@@ -40,10 +40,13 @@ invadr("matt", { palette: brand });
 ## React
 
 ```tsx
-import { Sprite, SpriteProvider } from "invadrs/react";
+import { Invadr, Spawn, InvadrsProvider } from "invadrs/react";
 
-<Sprite id="matt" from="invadr" palette="css-vars" />
-<SpriteProvider palette="tokyoNight" size={20}>…</SpriteProvider>
+<Invadr id="matt" palette="css-vars" />   {/* hand-drawn creature */}
+<Spawn id="matt" />                         {/* procedural creature */}
+
+{/* app-wide defaults; explicit props on a component win */}
+<InvadrsProvider palette="tokyoNight" size={20}>…</InvadrsProvider>
 ```
 
 ## Stability contract

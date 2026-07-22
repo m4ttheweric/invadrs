@@ -4,20 +4,20 @@ import type { ResolvedSprite } from "../render.ts";
 import { resolveInvadr } from "../invadr.ts";
 import { resolveSpawn } from "../spawn.ts";
 
-export type SpriteProps = SpriteOptions & {
-  id: string;
-  from?: "invadr" | "spawn";
-  className?: string;
-};
+/** Props for the avatar components. `<Invadr>` and `<Spawn>` take the same
+    shape; the component you pick chooses the primitive (no `from` prop). */
+export type InvadrProps = SpriteOptions & { id: string; className?: string };
+export type SpawnProps = InvadrProps;
 
-type Defaults = Partial<Omit<SpriteProps, "id">>;
+type Defaults = Partial<Omit<InvadrProps, "id">>;
 
-const SpriteContext = createContext<Defaults>({});
+const InvadrsContext = createContext<Defaults>({});
 
-/** Supply default Sprite props (palette, size, from, …) to descendants. */
-export function SpriteProvider({ children, ...defaults }: { children: ReactNode } & Defaults) {
-  const inherited = useContext(SpriteContext);
-  return <SpriteContext.Provider value={{ ...inherited, ...defaults }}>{children}</SpriteContext.Provider>;
+/** Supply default avatar props (palette, size, padding, …) to descendants.
+    Explicit props on an `<Invadr>`/`<Spawn>` override these. */
+export function InvadrsProvider({ children, ...defaults }: { children: ReactNode } & Defaults) {
+  const inherited = useContext(InvadrsContext);
+  return <InvadrsContext.Provider value={{ ...inherited, ...defaults }}>{children}</InvadrsContext.Provider>;
 }
 
 function renderCells(s: ResolvedSprite): ReactNode[] {
@@ -36,13 +36,9 @@ function renderCells(s: ResolvedSprite): ReactNode[] {
   return nodes;
 }
 
-/** Inline SVG avatar for an id. Renders the same ResolvedSprite the core string
-    renderer uses, so output matches `invadr`/`spawn`. */
-export function Sprite(props: SpriteProps) {
-  const merged = { ...useContext(SpriteContext), ...props } as SpriteProps;
-  const { id, from = "invadr", className, ...options } = merged;
-  const resolved = from === "spawn" ? resolveSpawn(id, options) : resolveInvadr(id, options);
-
+/** Build the inline `<svg>` from a resolved sprite. Mirrors the core string
+    renderer (`renderSvg`) so the JSX and string outputs match. */
+function svgFrom(resolved: ResolvedSprite, className?: string): ReactNode {
   const n = resolved.grid.length;
   const min = -resolved.padding;
   const span = n + resolved.padding * 2;
@@ -62,4 +58,16 @@ export function Sprite(props: SpriteProps) {
       {renderCells(resolved)}
     </svg>
   );
+}
+
+/** A hand-drawn creature (one of 16) for an id, as inline SVG. */
+export function Invadr(props: InvadrProps): ReactNode {
+  const { id, className, ...options } = { ...useContext(InvadrsContext), ...props } as InvadrProps;
+  return svgFrom(resolveInvadr(id, options), className);
+}
+
+/** A procedural, unique-per-id creature, as inline SVG. */
+export function Spawn(props: SpawnProps): ReactNode {
+  const { id, className, ...options } = { ...useContext(InvadrsContext), ...props } as SpawnProps;
+  return svgFrom(resolveSpawn(id, options), className);
 }
