@@ -14,8 +14,8 @@ export const palettes: Record<PaletteName, Palette> = {
   ocean:      { colors: ["#1d3557", "#2a9d8f", "#48cae4", "#56e39f", "#4361ee", "#7bdff2"] },
   // greens and earth — pine, leaf, lime-olive, fern, bark, tan
   forest:     { colors: ["#386641", "#6a994e", "#a7c957", "#588157", "#b08968", "#dda15e"] },
-  // grayscale
-  mono:       { colors: ["#e6e6e6", "#bdbdbd", "#9e9e9e", "#757575", "#bdbdbd", "#e6e6e6"] },
+  // grayscale — mid greys, 6 distinct, legible on both light and dark backgrounds
+  mono:       { colors: ["#a8a8a8", "#969696", "#848484", "#727272", "#606060", "#545454"] },
 };
 
 /** Palette that emits CSS custom properties instead of literal colors so the

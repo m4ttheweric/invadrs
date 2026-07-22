@@ -1,20 +1,24 @@
 import { test, expect } from "bun:test";
-import { INVADR_SPRITES, byteRowsToGrid, invadr, resolveInvadr } from "./invadr.ts";
+import { INVADR_SPRITES, spriteToGrid, invadr, resolveInvadr } from "./invadr.ts";
 
-test("there are 16 sprites, each 8 rows", () => {
+test("there are 16 sprites, each 11x11", () => {
   expect(INVADR_SPRITES.length).toBe(16);
-  for (const s of INVADR_SPRITES) expect(s.length).toBe(8);
+  for (const s of INVADR_SPRITES) {
+    expect(s.length).toBe(11);
+    for (const row of s) expect(row.length).toBe(11);
+  }
 });
 
-test("byteRowsToGrid reads MSB as the left pixel", () => {
-  const grid = byteRowsToGrid([0b10000001, 0, 0, 0, 0, 0, 0, 0]);
-  expect(grid[0]).toEqual([true, false, false, false, false, false, false, true]);
+test("spriteToGrid maps '#' to filled cells", () => {
+  expect(spriteToGrid(["#.#", ".#."])).toEqual([
+    [true, false, true],
+    [false, true, false],
+  ]);
 });
 
 test("every invadr sprite is left-right symmetric", () => {
   for (const s of INVADR_SPRITES) {
-    const grid = byteRowsToGrid(s);
-    for (const row of grid) expect(row).toEqual([...row].reverse());
+    for (const row of s) expect(row).toBe([...row].reverse().join(""));
   }
 });
 
@@ -32,5 +36,5 @@ test("invadr snapshot locks the determinism contract", () => {
 
 test("resolveInvadr uses seed % 16 for the sprite", () => {
   const r = resolveInvadr("matt");
-  expect(r.grid.length).toBe(8);
+  expect(r.grid.length).toBe(11);
 });
