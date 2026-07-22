@@ -16,7 +16,7 @@ test("css-vars palette order is frozen for mr-board parity", () => {
 
 test("resolvePalette handles every input form", () => {
   expect(resolvePalette()).toBe(palettes.tokyoNight);
-  expect(resolvePalette("pico8")).toBe(palettes.pico8);
+  expect(resolvePalette("neon")).toBe(palettes.neon);
   expect(resolvePalette("css-vars")).toBe(CSS_VARS);
   expect(resolvePalette(["#111", "#222"]).colors).toEqual(["#111", "#222"]);
   const p = { colors: ["#abc"], background: "#000" };

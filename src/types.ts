@@ -7,11 +7,11 @@ export type Palette = { colors: string[]; background?: string };
 /** Names of the built-in palettes. */
 export type PaletteName =
   | "tokyoNight"
-  | "pico8"
-  | "gruvbox"
-  | "catppuccin"
-  | "mono"
-  | "candy";
+  | "neon"
+  | "sunset"
+  | "ocean"
+  | "forest"
+  | "mono";
 
 /** Anything accepted for the `palette` option. `"css-vars"` emits
     `var(--...)` fills so the host theme drives the color. */

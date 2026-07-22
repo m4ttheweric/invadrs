@@ -8,7 +8,7 @@ import { invadr, spawn, dataUri } from "spritr";
 
 invadr("matt");                       // hand-drawn creature, SVG string
 spawn("matt");                        // procedural creature, SVG string
-invadr("matt", { palette: "pico8", size: 32 });
+invadr("matt", { palette: "sunset", size: 32 });
 dataUri(invadr("matt"));              // data:image/svg+xml,...
 ```
 
@@ -25,9 +25,11 @@ so host CSS controls the size.)
 
 ## Palettes & theming
 
-Built-ins: `tokyoNight` (default), `pico8`, `gruvbox`, `catppuccin`, `mono`,
-`candy`. Pass a name, your own `string[]`, a full `{ colors, background }`
-object, or `"css-vars"` to emit `var(--accent)`… fills that follow your theme.
+Built-ins, each its own colour mood: `tokyoNight` (default, balanced rainbow),
+`neon` (electric, dark-bg), `sunset` (warm), `ocean` (cool), `forest`
+(greens/earth), `mono` (grayscale). Pass a name, your own `string[]`, a full
+`{ colors, background }` object, or `"css-vars"` to emit `var(--accent)`… fills
+that follow your theme.
 
 ```ts
 import { palettes } from "spritr";

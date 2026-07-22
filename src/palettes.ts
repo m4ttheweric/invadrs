@@ -1,13 +1,21 @@
 import type { Palette, PaletteName, PaletteInput } from "./types.ts";
 
-/** Built-in palettes. `tokyoNight` is the default and matches mr-board. */
+/** Built-in palettes. `tokyoNight` is the default and matches mr-board.
+    Each palette is its own colour mood (not the same rainbow re-shaded), so a
+    given id looks distinct from one palette to the next. */
 export const palettes: Record<PaletteName, Palette> = {
+  // balanced rainbow (default) — the Tokyo Night editor colours
   tokyoNight: { colors: ["#7aa2f7", "#9ece6a", "#e0af68", "#bb9af7", "#7dcfff", "#f7768e"] },
-  pico8:      { colors: ["#29adff", "#00e436", "#ffa300", "#ff77a8", "#ffec27", "#ff004d"] },
-  gruvbox:    { colors: ["#83a598", "#b8bb26", "#fabd2f", "#d3869b", "#8ec07c", "#fb4934"] },
-  catppuccin: { colors: ["#89b4fa", "#a6e3a1", "#f9e2af", "#cba6f7", "#94e2d5", "#f38ba8"] },
+  // electric high-saturation — reads best on dark backgrounds
+  neon:       { colors: ["#ff2e97", "#00eaff", "#39ff14", "#b026ff", "#faff00", "#ff5900"] },
+  // warm only — crimson, vermilion, orange, gold, rose, deep red
+  sunset:     { colors: ["#e5383b", "#ff6b35", "#f77f00", "#ffca3a", "#ff5c8a", "#c1121f"] },
+  // cool only — navy, teal, sky, seafoam, blue, aqua
+  ocean:      { colors: ["#1d3557", "#2a9d8f", "#48cae4", "#56e39f", "#4361ee", "#7bdff2"] },
+  // greens and earth — pine, leaf, lime-olive, fern, bark, tan
+  forest:     { colors: ["#386641", "#6a994e", "#a7c957", "#588157", "#b08968", "#dda15e"] },
+  // grayscale
   mono:       { colors: ["#e6e6e6", "#bdbdbd", "#9e9e9e", "#757575", "#bdbdbd", "#e6e6e6"] },
-  candy:      { colors: ["#ff6bd6", "#5be6a8", "#ffd166", "#a06bff", "#5bd8ff", "#ff5b6b"] },
 };
 
 /** Palette that emits CSS custom properties instead of literal colors so the
