@@ -1,6 +1,6 @@
 {
   "name": "invadrs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Deterministic space-invaders-style pixel avatars from any string.",
   "type": "module",
   "license": "MIT",
