@@ -23,26 +23,28 @@ dataUri(invadr("matt"));              // data:image/svg+xml,...
 
 ## Options
 
-`{ size?, palette?, padding?, background?, title?, resolution?, sprite? }`
+`{ size?, palette?, padding?, background?, title?, resolution?, sprite?, color?, salt?, accent?, tint? }`
 (`resolution` is `spawn`-only and `sprite` is `invadr`-only; when `size` is
 omitted no `width`/`height` is set, so host CSS controls the size.)
 
-## A distinct creature per person
+`color` picks a palette index for the body. `salt` shifts every avatar (empty means none). `accent` fills the eyes and mouth with a second color. `tint` adds a faint background in a palette color (a `background` wins).
 
-Sixteen creatures means two ids can hash to the same one. For a known set of
-people (a team roster), `distinctSprites` hands each id its own creature and
-`sprite` draws it:
+## A distinct avatar per person
+
+Two ids can land on the same creature and color. For a known set of people
+(a team, a chat room), `distinctAvatars` hands each id its own pair:
 
 ```ts
-import { distinctSprites, invadr } from "invadrs";
+import { distinctAvatars, invadr } from "invadrs";
 
-const sprites = distinctSprites(["ana", "ben", "cy"]);
-invadr("ben", { sprite: sprites.get("ben") });
+const avatars = distinctAvatars(["ana", "ben", "cy"], { palette: "neon" });
+invadr("ben", { palette: "neon", ...avatars.get("ben") });
 ```
 
-Each id keeps the creature it would have had unless an earlier id holds it,
-so appending a person never changes anyone before them. Past 16 ids,
-creatures repeat.
+Pass the same `palette` and `salt` you render with. Each id keeps its own
+pair unless an earlier id holds it, so appending a person never changes
+anyone before them. A 6-color palette gives 96 distinct pairs; past that,
+pairs repeat.
 
 ## Palettes & theming
 
@@ -72,6 +74,8 @@ import { Invadr, Spawn, InvadrsProvider } from "invadrs/react";
 
 ## Stability contract
 
-The hash, the order of the built-in creatures, the procedural generator, and the
-`css-vars` color order are **frozen**. Changing any of them alters existing
-avatars and is only ever done in a major release.
+The hash (FNV-1a finished with murmur3's fmix32), the salt format (`salt + "\u0000" + id`), the seed bit ranges (creature `% 16`, color `>>> 4`, accent `>>> 12`, tint `>>> 20`), the order of the built-in creatures, the procedural generator, and the `css-vars` color order are **frozen**. Changing any of them alters existing avatars and is only ever done in a major release.
+
+## Upgrading from 0.x
+
+1.0 changes the hash, so every avatar changes. `distinctSprites(ids).get(id)` becomes `distinctAvatars(ids).get(id)?.sprite`, or spread the whole pick to also get distinct colors. Pin `0.3.x` to keep the old avatars.

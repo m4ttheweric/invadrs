@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
 import { Invadr, Spawn, InvadrsProvider } from "./index.tsx";
-import { palettes, hashStr, INVADR_SPRITES, type PaletteName } from "../index.ts";
+import { palettes, hashStr, distinctAvatars, INVADR_SPRITES, type PaletteName } from "../index.ts";
 
 const paletteOptions = [...Object.keys(palettes), "css-vars"];
 const sampleIds = ["ada", "linus", "grace", "alan", "margaret", "dennis", "ken", "guido"];
@@ -183,4 +183,48 @@ export const WithProvider: Story = {
       </div>
     </InvadrsProvider>
   ),
+};
+
+/** 96 people, each with their own creature and color pair from `distinctAvatars`. */
+export const DistinctGroup: Story = {
+  args: { size: 36 },
+  argTypes: { id: { table: { disable: true } }, padding: { table: { disable: true } } },
+  render: ({ size, palette }) => {
+    const ids = Array.from({ length: 96 }, (_, i) => `member-${i}`);
+    const avatars = distinctAvatars(ids, { palette });
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, auto)", gap: 8 }}>
+        {ids.map((id) => (
+          <Invadr key={id} id={id} size={size} palette={palette} {...avatars.get(id)} />
+        ))}
+      </div>
+    );
+  },
+};
+
+/** Every creature with `accent`, `tint`, and both, against the plain version. */
+export const Variety: Story = {
+  args: { size: 44 },
+  argTypes: { id: { table: { disable: true } }, padding: { table: { disable: true } } },
+  render: ({ size, palette }) => {
+    const ids = idsForEverySprite();
+    const rows = [
+      { name: "plain", opts: {} },
+      { name: "accent", opts: { accent: true } },
+      { name: "tint", opts: { tint: true } },
+      { name: "accent + tint", opts: { accent: true, tint: true } },
+    ];
+    return (
+      <div style={{ display: "grid", gap: 12 }}>
+        {rows.map((row) => (
+          <div key={row.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ ...label(""), width: 96 }}>{row.name}</span>
+            {ids.map((id) => (
+              <Invadr key={id} id={id} size={size} palette={palette} {...row.opts} />
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  },
 };
