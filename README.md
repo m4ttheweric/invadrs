@@ -58,6 +58,16 @@ const { fill } = avatars.get("ben")!;
 cursor.style.borderColor = fill;
 ```
 
+By default only the pair is unique, so two people can share a color on
+different creatures. When color alone has to tell people apart, pass
+`unique: "both"`: the first `min(16, palette size)` people each get their
+own creature and their own color, and anyone past that falls back to
+distinct pairs.
+
+```ts
+const avatars = distinctAvatars(memberIds, { palette, unique: "both" });
+```
+
 Picks follow list order, so removing or reordering people can move the
 people after them. To keep assignments fixed, keep the list in a stable
 order (say, by join time) or store each person's pick when they join.

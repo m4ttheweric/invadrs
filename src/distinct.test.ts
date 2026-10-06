@@ -98,3 +98,45 @@ test("fill is the color the avatar is drawn with", () => {
 test("fill follows css-vars", () => {
   expect(distinctAvatars(["ana"], { palette: "css-vars" }).get("ana")!.fill).toStartWith("var(--");
 });
+
+const nine = Array.from({ length: 9 }, (_, i) => `#${(i + 1).toString(16).padStart(6, "0")}`);
+
+test("unique both: each id gets its own creature and its own color", () => {
+  const picks = [...distinctAvatars(members(8), { palette: nine, unique: "both" }).values()];
+  expect(new Set(picks.map((p) => p.sprite)).size).toBe(8);
+  expect(new Set(picks.map((p) => p.color)).size).toBe(8);
+});
+
+test("unique both: a creature clash moves the second id to a free creature", () => {
+  const pool = members(200);
+  const a = pool[0]!;
+  const b = pool.find((id) => id !== a && spriteIndex(id) === spriteIndex(a))!;
+  const pa = distinctAvatars([a, b], { palette: nine, unique: "both" }).get(a)!;
+  const pb = distinctAvatars([a, b], { palette: nine, unique: "both" }).get(b)!;
+  expect(pb.sprite).not.toBe(pa.sprite);
+  expect(pb.color).not.toBe(pa.color);
+});
+
+test("unique both: the first id keeps its natural pair", () => {
+  expect(distinctAvatars(["member-0"], { unique: "both" }).get("member-0")).toEqual(natural("member-0"));
+});
+
+test("unique both: appending an id never changes the picks before it", () => {
+  const ids = members(12);
+  const before = distinctAvatars(ids.slice(0, 11), { unique: "both" });
+  const after = distinctAvatars(ids, { unique: "both" });
+  for (const id of ids.slice(0, 11)) expect(after.get(id)).toEqual(before.get(id)!);
+});
+
+test("unique both: past min(16, palette size), pairs stay distinct", () => {
+  const picks = [...distinctAvatars(members(40), { unique: "both" }).values()];
+  const first = picks.slice(0, 6);
+  expect(new Set(first.map((p) => p.color)).size).toBe(6);
+  expect(new Set(first.map((p) => p.sprite)).size).toBe(6);
+  expect(new Set(picks.map(key)).size).toBe(40);
+});
+
+test("unique both: fill matches the rendered color", () => {
+  const picks = distinctAvatars(members(8), { palette: nine, unique: "both" });
+  for (const [id, pick] of picks) expect(pick.fill).toBe(resolveInvadr(id, { palette: nine, ...pick }).color);
+});
