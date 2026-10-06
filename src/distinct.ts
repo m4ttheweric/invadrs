@@ -3,8 +3,12 @@ import { INVADR_SPRITES, spriteFor } from "./invadr.ts";
 import { resolvePalette, colorIndex } from "./palettes.ts";
 import type { PaletteInput } from "./types.ts";
 
-/** A creature and a palette color index, ready to spread into options. */
-export type AvatarPick = { sprite: number; color: number };
+/** A creature, a palette color index and the color it resolves to, ready to
+    spread into options. `fill` is the exact paint the avatar is drawn with,
+    for presence indicators and other UI that should match it. */
+export type AvatarPick = { sprite: number; color: number; fill: string };
+
+type Pair = Omit<AvatarPick, "fill">;
 
 /** One creature and color pair per id, distinct across the set while the
     `16 * palette size` pairs last. Ids are taken in order, so appending an
@@ -14,12 +18,13 @@ export function distinctAvatars(
   ids: readonly string[],
   options?: { palette?: PaletteInput; salt?: string },
 ): Map<string, AvatarPick> {
-  const n = resolvePalette(options?.palette).colors.length;
+  const colors = resolvePalette(options?.palette).colors;
+  const n = colors.length;
   const s = INVADR_SPRITES.length;
   const taken = new Set<number>();
   const isFree = (sprite: number, color: number) => !taken.has(sprite * n + color);
 
-  const choose = (own: AvatarPick): AvatarPick | undefined => {
+  const choose = (own: Pair): Pair | undefined => {
     if (isFree(own.sprite, own.color)) return own;
     for (let color = 0; color < n; color++) if (isFree(own.sprite, color)) return { sprite: own.sprite, color };
     for (let sprite = 0; sprite < s; sprite++) if (isFree(sprite, own.color)) return { sprite, color: own.color };
@@ -35,7 +40,7 @@ export function distinctAvatars(
     const own = { sprite: spriteFor(seed), color: colorIndex(seed, n) };
     const pick = choose(own) ?? own;
     taken.add(pick.sprite * n + pick.color);
-    out.set(id, pick);
+    out.set(id, { ...pick, fill: colors[pick.color]! });
   }
   return out;
 }

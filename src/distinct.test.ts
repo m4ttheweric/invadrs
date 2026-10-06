@@ -2,14 +2,16 @@ import { test, expect } from "bun:test";
 import { distinctAvatars, type AvatarPick } from "./distinct.ts";
 import { spriteIndex } from "./invadr.ts";
 import { seedFor } from "./hash.ts";
-import { colorIndex } from "./palettes.ts";
+import { colorIndex, palettes } from "./palettes.ts";
+import { resolveInvadr } from "./invadr.ts";
+import type { PaletteInput } from "./types.ts";
 
 const members = (k: number) => Array.from({ length: k }, (_, i) => `member-${i}`);
 const key = (p: AvatarPick) => `${p.sprite}:${p.color}`;
-const natural = (id: string, n = 6, salt?: string): AvatarPick => ({
-  sprite: spriteIndex(id, salt),
-  color: colorIndex(seedFor(id, salt), n),
-});
+const natural = (id: string, salt?: string): AvatarPick => {
+  const color = colorIndex(seedFor(id, salt), 6);
+  return { sprite: spriteIndex(id, salt), color, fill: palettes.tokyoNight.colors[color]! };
+};
 
 test("96 ids get 96 distinct pairs on the default palette", () => {
   const picks = distinctAvatars(members(96));
@@ -45,7 +47,7 @@ test("a repeated id keeps its first assignment", () => {
 });
 
 test("the salt changes natural pairs", () => {
-  expect(distinctAvatars(["x"], { salt: "s" }).get("x")).toEqual(natural("x", 6, "s"));
+  expect(distinctAvatars(["x"], { salt: "s" }).get("x")).toEqual(natural("x", "s"));
 });
 
 test("a 12-color palette gives 192 distinct pairs", () => {
@@ -79,4 +81,20 @@ test("past capacity, ids fall back to their natural pair", () => {
   expect(picks.size).toBe(100);
   expect(new Set([...picks.values()].map(key)).size).toBe(96);
   for (const id of ids.slice(96)) expect(picks.get(id)).toEqual(natural(id));
+});
+
+test("fill is the color the avatar is drawn with", () => {
+  const inputs: PaletteInput[] = ["neon", "css-vars", ["#111", "#222"]];
+  for (const palette of inputs) {
+    const ids = members(40);
+    const picks = distinctAvatars(ids, { palette, salt: "s" });
+    for (const id of ids) {
+      const pick = picks.get(id)!;
+      expect(pick.fill).toBe(resolveInvadr(id, { palette, salt: "s", ...pick }).color);
+    }
+  }
+});
+
+test("fill follows css-vars", () => {
+  expect(distinctAvatars(["ana"], { palette: "css-vars" }).get("ana")!.fill).toStartWith("var(--");
 });

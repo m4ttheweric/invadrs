@@ -49,6 +49,19 @@ pair unless an earlier id holds it, so appending a person never changes
 anyone before them. A 6-color palette gives 96 distinct pairs; past that,
 pairs repeat.
 
+Each pick also carries `fill`, the exact color the avatar is drawn with
+(a `var(--...)` string under `css-vars`), so the rest of your UI can match
+it: a cursor, a border, a "Ben is here" dot.
+
+```ts
+const { fill } = avatars.get("ben")!;
+cursor.style.borderColor = fill;
+```
+
+Picks follow list order, so removing or reordering people can move the
+people after them. To keep assignments fixed, keep the list in a stable
+order (say, by join time) or store each person's pick when they join.
+
 ## Palettes & theming
 
 Built-ins, each its own colour mood: `tokyoNight` (default, balanced rainbow),
