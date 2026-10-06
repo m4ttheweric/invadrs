@@ -14,7 +14,7 @@ export type ResolvedSprite = {
   tint?: string;
 };
 
-/** Escape the five XML special characters for safe inclusion in <title>. */
+/** Escape the five XML special characters for safe inclusion in text and attribute values. */
 export function escapeXml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -53,10 +53,10 @@ export function renderSvg(s: ResolvedSprite): string {
 
   const rects: string[] = [];
   if (s.background) {
-    rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${s.background}"/>`);
+    rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${escapeXml(s.background)}"/>`);
   }
   if (s.tint) {
-    rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${s.tint}" fill-opacity="0.18"/>`);
+    rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${escapeXml(s.tint)}" fill-opacity="0.18"/>`);
   }
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
@@ -66,7 +66,7 @@ export function renderSvg(s: ResolvedSprite): string {
 
   if (s.accent) {
     const cells = s.accent.cells.map(([x, y]) => `<rect x="${x}" y="${y}" width="1" height="1"/>`).join("");
-    rects.push(`<g fill="${s.accent.color}">${cells}</g>`);
+    rects.push(`<g fill="${escapeXml(s.accent.color)}">${cells}</g>`);
   }
 
   const dims = s.size !== undefined ? ` width="${s.size}" height="${s.size}"` : "";
@@ -75,7 +75,7 @@ export function renderSvg(s: ResolvedSprite): string {
 
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${min} ${min} ${span} ${span}"${dims}` +
-    ` shape-rendering="crispEdges" fill="${s.color}" ${a11y}>${titleEl}${rects.join("")}</svg>`
+    ` shape-rendering="crispEdges" fill="${escapeXml(s.color)}" ${a11y}>${titleEl}${rects.join("")}</svg>`
   );
 }
 

@@ -97,3 +97,10 @@ test("accent and tint are off by default", () => {
   expect(r.accent).toBeUndefined();
   expect(r.tint).toBeUndefined();
 });
+
+test("renderSvg escapes every paint value", () => {
+  const bad = `x"/><script>`;
+  const svg = renderSvg({ grid: g, color: bad, padding: 1, background: bad, tint: bad, accent: { color: bad, cells: [[1, 0]] } });
+  expect(svg).not.toContain("<script>");
+  expect(svg.match(/fill="x&quot;\/&gt;&lt;script&gt;"/g)!.length).toBe(4);
+});
