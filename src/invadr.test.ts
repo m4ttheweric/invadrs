@@ -84,3 +84,16 @@ test("past 16 ids, creatures repeat from each id's own", () => {
   expect(sprites.size).toBe(20);
   expect(new Set(sprites.values()).size).toBe(16);
 });
+
+test("a salt moves ids to different avatars", () => {
+  const ids = Array.from({ length: 20 }, (_, i) => `member-${i}`);
+  expect(ids.some((id) => invadr(id, { salt: "s" }) !== invadr(id))).toBe(true);
+});
+
+test("spriteIndex follows the salt", () => {
+  for (const id of ["ana", "ben", "cy"]) {
+    expect(resolveInvadr(id, { salt: "s" }).grid).toEqual(
+      spriteToGrid(INVADR_SPRITES[spriteIndex(id, "s")]!),
+    );
+  }
+});

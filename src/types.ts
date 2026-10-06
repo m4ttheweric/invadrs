@@ -28,4 +28,6 @@ export type SpriteOptions = {
   /** `invadr` only: the creature to draw (0-15, wrapping), instead of the
       one the id hashes to. `spawn` ignores it. */
   sprite?: number;
+  /** Shifts every avatar to a different one. Empty means no salt. */
+  salt?: string;
 };

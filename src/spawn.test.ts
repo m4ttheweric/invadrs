@@ -31,3 +31,7 @@ test("spawn is deterministic and returns an svg string", () => {
 test("spawn snapshot locks the procedural contract", () => {
   expect(spawn("matt")).toMatchSnapshot();
 });
+
+test("spawn with an empty salt matches no salt", () => {
+  expect(spawn("matt", { salt: "" })).toBe(spawn("matt"));
+});

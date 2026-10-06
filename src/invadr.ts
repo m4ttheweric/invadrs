@@ -1,4 +1,4 @@
-import { hashStr } from "./hash.ts";
+import { seedFor } from "./hash.ts";
 import type { Grid, SpriteOptions } from "./types.ts";
 import { resolveCommon, renderSvg, type ResolvedSprite } from "./render.ts";
 
@@ -85,8 +85,8 @@ export function invadrGrid(seed: number): Grid {
 }
 
 /** The creature index an id gets when no `sprite` option overrides it. */
-export function spriteIndex(id: string): number {
-  return hashStr(id) % INVADR_SPRITES.length;
+export function spriteIndex(id: string, salt?: string): number {
+  return seedFor(id, salt) % INVADR_SPRITES.length;
 }
 
 /** One creature per id, distinct across the set while the 16 last. Ids are
@@ -113,7 +113,7 @@ export function distinctSprites(ids: readonly string[]): Map<string, number> {
 
 /** Resolve a hand-drawn creature for an id (structured form). */
 export function resolveInvadr(id: string, options?: SpriteOptions): ResolvedSprite {
-  const seed = hashStr(id);
+  const seed = seedFor(id, options?.salt);
   const n = INVADR_SPRITES.length;
   const grid =
     options?.sprite === undefined
