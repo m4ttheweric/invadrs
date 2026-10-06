@@ -33,4 +33,8 @@ export type SpriteOptions = {
   /** The body color as a palette index (wrapping), instead of the one the
       id hashes to. */
   color?: number;
+  /** Fill the creature's enclosed holes (eyes, mouth) with a second color. */
+  accent?: boolean;
+  /** A faint background in a palette color. A `background` wins over it. */
+  tint?: boolean;
 };

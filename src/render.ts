@@ -1,5 +1,6 @@
 import type { Grid, SpriteOptions } from "./types.ts";
-import { resolvePalette, wrapIndex, colorIndex } from "./palettes.ts";
+import { resolvePalette, wrapIndex, colorIndex, accentIndex, tintIndex } from "./palettes.ts";
+import { holes } from "./holes.ts";
 
 /** A fully-resolved sprite: geometry + paint + presentation, ready to render. */
 export type ResolvedSprite = {
@@ -9,6 +10,8 @@ export type ResolvedSprite = {
   padding: number;
   background?: string;
   title?: string;
+  accent?: { color: string; cells: [number, number][] };
+  tint?: string;
 };
 
 /** Escape the five XML special characters for safe inclusion in <title>. */
@@ -27,13 +30,18 @@ export function resolveCommon(seed: number, grid: Grid, options?: SpriteOptions)
   const palette = resolvePalette(options?.palette);
   const n = palette.colors.length;
   const body = wrapIndex(options?.color, n) ?? colorIndex(seed, n);
+  const background = options?.background ?? palette.background;
+  const accentAt = options?.accent ? accentIndex(seed, n, body) : undefined;
+  const cells = accentAt === undefined ? [] : holes(grid);
   return {
     grid,
     color: palette.colors[body]!,
     size: options?.size,
     padding: options?.padding ?? 1,
-    background: options?.background ?? palette.background,
+    background,
     title: options?.title,
+    tint: options?.tint && background === undefined ? palette.colors[tintIndex(seed, n)] : undefined,
+    accent: cells.length > 0 ? { color: palette.colors[accentAt!]!, cells } : undefined,
   };
 }
 
@@ -47,13 +55,21 @@ export function renderSvg(s: ResolvedSprite): string {
   if (s.background) {
     rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${s.background}"/>`);
   }
+  if (s.tint) {
+    rects.push(`<rect x="${min}" y="${min}" width="${span}" height="${span}" fill="${s.tint}" fill-opacity="0.18"/>`);
+  }
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
       if (s.grid[y]![x]) rects.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`);
     }
   }
 
-  const dims = s.size !== undefined ? ` width="${s.size}" height="${s.size}"` : "";
+  if (s.accent) {
+    const cells = s.accent.cells.map(([x, y]) => `<rect x="${x}" y="${y}" width="1" height="1"/>`).join("");
+    rects.push(`<g fill="${s.accent.color}">${cells}</g>`);
+  }
+
+  const dims =s.size !== undefined ? ` width="${s.size}" height="${s.size}"` : "";
   const a11y = s.title ? `role="img"` : `aria-hidden="true"`;
   const titleEl = s.title ? `<title>${escapeXml(s.title)}</title>` : "";
 

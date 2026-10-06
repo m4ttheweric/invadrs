@@ -48,6 +48,19 @@ export function colorIndex(seed: number, n: number): number {
   return (seed >>> 4) % n;
 }
 
+/** The accent color index: a pick among the colors other than `body`.
+    Frozen: bits 12 and up. Undefined with fewer than two colors. */
+export function accentIndex(seed: number, n: number, body: number): number | undefined {
+  if (n < 2) return undefined;
+  const k = (seed >>> 12) % (n - 1);
+  return k >= body ? k + 1 : k;
+}
+
+/** The tint color index. Frozen: bits 20 and up. */
+export function tintIndex(seed: number, n: number): number {
+  return (seed >>> 20) % n;
+}
+
 /** Deterministically pick a color from the palette for a given seed. */
 export function pickColor(seed: number, palette: Palette): string {
   return palette.colors[colorIndex(seed, palette.colors.length)]!;
