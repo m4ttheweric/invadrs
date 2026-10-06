@@ -25,4 +25,7 @@ export type SpriteOptions = {
   background?: string;
   title?: string;
   resolution?: number;
+  /** `invadr` only: the creature to draw (0-15, wrapping), instead of the
+      one the id hashes to. `spawn` ignores it. */
+  sprite?: number;
 };

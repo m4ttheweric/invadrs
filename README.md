@@ -23,9 +23,26 @@ dataUri(invadr("matt"));              // data:image/svg+xml,...
 
 ## Options
 
-`{ size?, palette?, padding?, background?, title?, resolution? }`
-(`resolution` is `spawn`-only; when `size` is omitted no `width`/`height` is set,
-so host CSS controls the size.)
+`{ size?, palette?, padding?, background?, title?, resolution?, sprite? }`
+(`resolution` is `spawn`-only and `sprite` is `invadr`-only; when `size` is
+omitted no `width`/`height` is set, so host CSS controls the size.)
+
+## A distinct creature per person
+
+Sixteen creatures means two ids can hash to the same one. For a known set of
+people (a team roster), `distinctSprites` hands each id its own creature and
+`sprite` draws it:
+
+```ts
+import { distinctSprites, invadr } from "invadrs";
+
+const sprites = distinctSprites(["ana", "ben", "cy"]);
+invadr("ben", { sprite: sprites.get("ben") });
+```
+
+Each id keeps the creature it would have had unless an earlier id holds it,
+so appending a person never changes anyone before them. Past 16 ids,
+creatures repeat.
 
 ## Palettes & theming
 
