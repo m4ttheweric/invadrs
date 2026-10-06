@@ -26,15 +26,29 @@ export const CSS_VARS: Palette = {
 
 /** Resolve any PaletteInput to a concrete Palette. */
 export function resolvePalette(input?: PaletteInput): Palette {
-  if (input === undefined) return palettes.tokyoNight;
-  if (input === "css-vars") return CSS_VARS;
-  if (typeof input === "string") return palettes[input];
-  if (Array.isArray(input)) return { colors: input };
-  return input;
+  const p =
+    input === undefined ? palettes.tokyoNight
+    : input === "css-vars" ? CSS_VARS
+    : typeof input === "string" ? palettes[input]
+    : Array.isArray(input) ? { colors: input }
+    : input;
+  if (p.colors.length === 0) throw new RangeError("invadrs: a palette needs at least one color");
+  return p;
 }
 
-/** Deterministically pick a color from the palette for a given seed.
-    Uses `seed >>> 4` so it is independent of the sprite index (`seed % n`). */
+/** Wrap an index option into [0, n). Non-finite input means "not given". */
+export function wrapIndex(i: number | undefined, n: number): number | undefined {
+  if (i === undefined || !Number.isFinite(i)) return undefined;
+  return ((Math.trunc(i) % n) + n) % n;
+}
+
+/** The body color index for a seed. Frozen: bits 4 and up, independent of
+    the creature (`seed % 16`). */
+export function colorIndex(seed: number, n: number): number {
+  return (seed >>> 4) % n;
+}
+
+/** Deterministically pick a color from the palette for a given seed. */
 export function pickColor(seed: number, palette: Palette): string {
-  return palette.colors[(seed >>> 4) % palette.colors.length]!;
+  return palette.colors[colorIndex(seed, palette.colors.length)]!;
 }

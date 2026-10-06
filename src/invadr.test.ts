@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
 import { INVADR_SPRITES, spriteToGrid, invadr, resolveInvadr, spriteIndex, distinctSprites } from "./invadr.ts";
+import { palettes } from "./palettes.ts";
 
 test("there are 16 sprites, each 11x11", () => {
   expect(INVADR_SPRITES.length).toBe(16);
@@ -96,4 +97,22 @@ test("spriteIndex follows the salt", () => {
       spriteToGrid(INVADR_SPRITES[spriteIndex(id, "s")]!),
     );
   }
+});
+
+test("the color option picks a palette index, wrapping", () => {
+  const c = palettes.tokyoNight.colors;
+  expect(resolveInvadr("matt", { color: 2 }).color).toBe(c[2]!);
+  expect(resolveInvadr("matt", { color: 8 }).color).toBe(c[2]!);
+  expect(resolveInvadr("matt", { color: -1 }).color).toBe(c[5]!);
+  expect(resolveInvadr("matt", { color: 0 }).color).toBe(c[0]!);
+});
+
+test("non-finite color and sprite options fall back to the hashed pick", () => {
+  const plain = resolveInvadr("matt");
+  expect(resolveInvadr("matt", { color: NaN }).color).toBe(plain.color);
+  expect(resolveInvadr("matt", { sprite: NaN }).grid).toEqual(plain.grid);
+});
+
+test("the color option leaves the creature to the id", () => {
+  expect(resolveInvadr("matt", { color: 3 }).grid).toEqual(resolveInvadr("matt").grid);
 });

@@ -30,4 +30,7 @@ export type SpriteOptions = {
   sprite?: number;
   /** Shifts every avatar to a different one. Empty means no salt. */
   salt?: string;
+  /** The body color as a palette index (wrapping), instead of the one the
+      id hashes to. */
+  color?: number;
 };

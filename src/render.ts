@@ -1,5 +1,5 @@
 import type { Grid, SpriteOptions } from "./types.ts";
-import { resolvePalette, pickColor } from "./palettes.ts";
+import { resolvePalette, wrapIndex, colorIndex } from "./palettes.ts";
 
 /** A fully-resolved sprite: geometry + paint + presentation, ready to render. */
 export type ResolvedSprite = {
@@ -25,9 +25,11 @@ export function escapeXml(s: string): string {
     color selection, and defaults (padding 1). Shared by both primitives. */
 export function resolveCommon(seed: number, grid: Grid, options?: SpriteOptions): ResolvedSprite {
   const palette = resolvePalette(options?.palette);
+  const n = palette.colors.length;
+  const body = wrapIndex(options?.color, n) ?? colorIndex(seed, n);
   return {
     grid,
-    color: pickColor(seed, palette),
+    color: palette.colors[body]!,
     size: options?.size,
     padding: options?.padding ?? 1,
     background: options?.background ?? palette.background,
