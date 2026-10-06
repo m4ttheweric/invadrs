@@ -37,7 +37,7 @@ nibble (`matt` / `Matt` / `MATT`, `user_1` / `user_a`) always share a creature.
   ```
 - This changes every `invadr` and `spawn` output. That is the major break.
 - New option `salt?: string` on `invadr`, `spawn`, their React components and
-  `distinctAvatars`. The seed is `hashStr(id)` when `salt` is undefined and
+  `distinctAvatars`. The seed is `hashStr(id)` when `salt` is undefined or empty and
   `hashStr(salt + "\u0000" + id)` otherwise. The NUL separator keeps
   `("ab", "c")` and `("a", "bc")` apart. A shared `seedFor(id, salt?)` helper
   owns this rule.
