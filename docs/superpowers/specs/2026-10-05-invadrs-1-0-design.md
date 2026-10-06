@@ -69,7 +69,7 @@ nibble (`matt` / `Matt` / `MATT`, `user_1` / `user_a`) always share a creature.
   6. All pairs taken: use the natural pair.
 - Appending ids never changes earlier assignments.
 - Usage: `invadr(id, { palette, salt, ...avatars.get(id) })`.
-- `distinctSprites` is removed. `spriteIndex` stays internal to the module.
+- `distinctSprites` is removed. `spriteIndex(id, salt?)` stays public.
 
 ### 3. Variety options (off by default)
 
@@ -90,7 +90,7 @@ nibble (`matt` / `Matt` / `MATT`, `user_1` / `user_a`) always share a creature.
 - README: rewrite the stability contract (frozen: FNV-1a + fmix32, salt format,
   bit ranges, sprite set and order, spawn generator, css-vars order); document
   `distinctAvatars`, `color`, `salt`, `accent`, `tint`; add "Upgrading from
-  0.x" (every avatar changes; `distinctSprites` -> `distinctAvatars(...).get(id).sprite`).
+  0.x" (every avatar changes; `distinctSprites` -> spread the whole `distinctAvatars` pick).
 - Regenerate snapshots after reviewing the diff; regenerate
   `assets/preview.png`; update Storybook stories and add a 96-avatar group
   story and an accent/tint story.

@@ -27,7 +27,10 @@ dataUri(invadr("matt"));              // data:image/svg+xml,...
 (`resolution` is `spawn`-only and `sprite` is `invadr`-only; when `size` is
 omitted no `width`/`height` is set, so host CSS controls the size.)
 
-`color` picks a palette index for the body. `salt` shifts every avatar (empty means none). `accent` fills the eyes and mouth with a second color. `tint` adds a faint background in a palette color (a `background` wins).
+`color` picks a palette index for the body. `salt` shifts every avatar
+(empty means none). `accent` fills the eyes and mouth with a second
+color. `tint` adds a faint background in a palette color (a `background`
+wins).
 
 ## A distinct avatar per person
 
@@ -74,8 +77,29 @@ import { Invadr, Spawn, InvadrsProvider } from "invadrs/react";
 
 ## Stability contract
 
-The hash (FNV-1a finished with murmur3's fmix32), the salt format (`salt + "\u0000" + id`), the seed bit ranges (creature `% 16`, color `>>> 4`, accent `>>> 12`, tint `>>> 20`), the order of the built-in creatures, the procedural generator, and the `css-vars` color order are **frozen**. Changing any of them alters existing avatars and is only ever done in a major release.
+These are **frozen**:
+
+- the hash (FNV-1a finished with murmur3's fmix32)
+- the salt format (`salt + "\u0000" + id`; an empty salt means none)
+- the seed bit ranges (creature `% 16`, color `>>> 4`, accent `>>> 12`,
+  tint `>>> 20`)
+- the accent rule (picked among the colors other than the body color;
+  drawn in enclosed holes, found by a 4-way flood fill from the grid edge)
+- the tint opacity (0.18)
+- the built-in creatures (their art and order)
+- the built-in palette colors and their order
+- the procedural generator
+- the `css-vars` color order
+- the `distinctAvatars` assignment order
+
+Changing any of them alters existing avatars and is only ever done in a
+major release.
 
 ## Upgrading from 0.x
 
-1.0 changes the hash, so every avatar changes. `distinctSprites(ids).get(id)` becomes `distinctAvatars(ids).get(id)?.sprite`, or spread the whole pick to also get distinct colors. Pin `0.3.x` to keep the old avatars.
+1.0 changes the hash, so every avatar changes. Replace `distinctSprites`
+by spreading the whole pick: `const avatars = distinctAvatars(ids)`, then
+`invadr(id, { ...avatars.get(id) })`. Pass the same palette and salt you
+render with. The pick's `.sprite` alone is not equivalent, because only
+the (creature, color) pair is distinct. Pin `0.3.x` to keep the old
+avatars.
