@@ -54,6 +54,25 @@ test("a 12-color palette gives 192 distinct pairs", () => {
   expect(new Set([...picks.values()].map(key)).size).toBe(192);
 });
 
+test("distinctAvatars assignment order is frozen", () => {
+  expect(
+    [...distinctAvatars(members(96))].map(([id, p]) => `${id}:${p.sprite}:${p.color}`),
+  ).toMatchSnapshot();
+});
+
+test("a one-color palette keeps color 0 and moves to another creature", () => {
+  const palette = ["#fff"];
+  const pool = members(3000);
+  const a = pool[0]!;
+  const b = pool.find((id) => id !== a && spriteIndex(id) === spriteIndex(a))!;
+  const picks = distinctAvatars([a, b], { palette });
+  expect(picks.get(b)!.color).toBe(0);
+  expect(picks.get(b)!.sprite).not.toBe(picks.get(a)!.sprite);
+
+  const sixteen = distinctAvatars(members(16), { palette });
+  expect(new Set([...sixteen.values()].map((p) => p.sprite)).size).toBe(16);
+});
+
 test("past capacity, ids fall back to their natural pair", () => {
   const ids = members(100);
   const picks = distinctAvatars(ids);
