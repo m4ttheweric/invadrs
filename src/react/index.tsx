@@ -23,15 +23,20 @@ export function InvadrsProvider({ children, ...defaults }: { children: ReactNode
 function renderCells(s: ResolvedSprite): ReactNode[] {
   const nodes: ReactNode[] = [];
   const n = s.grid.length;
-  if (s.background) {
-    nodes.push(
-      <rect key="bg" x={-s.padding} y={-s.padding} width={n + s.padding * 2} height={n + s.padding * 2} fill={s.background} />,
-    );
-  }
+  const edge = { x: -s.padding, y: -s.padding, width: n + s.padding * 2, height: n + s.padding * 2 };
+  if (s.background) nodes.push(<rect key="bg" {...edge} fill={s.background} />);
+  if (s.tint) nodes.push(<rect key="tint" {...edge} fill={s.tint} fillOpacity={0.18} />);
   for (let y = 0; y < n; y++) {
     for (let x = 0; x < n; x++) {
       if (s.grid[y]![x]) nodes.push(<rect key={`${x},${y}`} x={x} y={y} width={1} height={1} />);
     }
+  }
+  if (s.accent) {
+    nodes.push(
+      <g key="accent" fill={s.accent.color}>
+        {s.accent.cells.map(([x, y]) => <rect key={`${x},${y}`} x={x} y={y} width={1} height={1} />)}
+      </g>,
+    );
   }
   return nodes;
 }

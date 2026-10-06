@@ -69,7 +69,7 @@ export function renderSvg(s: ResolvedSprite): string {
     rects.push(`<g fill="${s.accent.color}">${cells}</g>`);
   }
 
-  const dims =s.size !== undefined ? ` width="${s.size}" height="${s.size}"` : "";
+  const dims = s.size !== undefined ? ` width="${s.size}" height="${s.size}"` : "";
   const a11y = s.title ? `role="img"` : `aria-hidden="true"`;
   const titleEl = s.title ? `<title>${escapeXml(s.title)}</title>` : "";
 
