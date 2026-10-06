@@ -1,4 +1,4 @@
-import { hashStr } from "./hash.ts";
+import { seedFor } from "./hash.ts";
 import type { Grid, SpriteOptions } from "./types.ts";
 import { resolveCommon, renderSvg, type ResolvedSprite } from "./render.ts";
 
@@ -37,7 +37,7 @@ export function spawnGrid(seed: number, resolution: number): Grid {
 
 /** Resolve a procedural creature for an id (structured form). */
 export function resolveSpawn(id: string, options?: SpriteOptions): ResolvedSprite {
-  const seed = hashStr(id);
+  const seed = seedFor(id, options?.salt);
   const resolution = options?.resolution ?? 8;
   return resolveCommon(seed, spawnGrid(seed, resolution), options);
 }

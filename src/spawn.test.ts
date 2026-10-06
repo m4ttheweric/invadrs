@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
-import { spawnGrid, spawn } from "./spawn.ts";
+import { spawnGrid, spawn, resolveSpawn } from "./spawn.ts";
+import { palettes } from "./palettes.ts";
 
 test("spawnGrid is square at the requested resolution", () => {
   const g = spawnGrid(12345, 8);
@@ -30,4 +31,12 @@ test("spawn is deterministic and returns an svg string", () => {
 
 test("spawn snapshot locks the procedural contract", () => {
   expect(spawn("matt")).toMatchSnapshot();
+});
+
+test("spawn with an empty salt matches no salt", () => {
+  expect(spawn("matt", { salt: "" })).toBe(spawn("matt"));
+});
+
+test("spawn honours the color option", () => {
+  expect(resolveSpawn("matt", { color: 1 }).color).toBe(palettes.tokyoNight.colors[1]!);
 });

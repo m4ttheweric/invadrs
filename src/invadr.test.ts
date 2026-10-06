@@ -1,5 +1,6 @@
 import { test, expect } from "bun:test";
-import { INVADR_SPRITES, spriteToGrid, invadr, resolveInvadr, spriteIndex, distinctSprites } from "./invadr.ts";
+import { INVADR_SPRITES, spriteToGrid, invadr, resolveInvadr, spriteIndex } from "./invadr.ts";
+import { palettes } from "./palettes.ts";
 
 test("there are 16 sprites, each 11x11", () => {
   expect(INVADR_SPRITES.length).toBe(16);
@@ -55,32 +56,33 @@ test("without the option an id draws its own creature", () => {
   expect(resolveInvadr("matt").grid).toEqual(spriteToGrid(INVADR_SPRITES[spriteIndex("matt")]!));
 });
 
-test("distinctSprites gives every id its own creature while the 16 last", () => {
-  const ids = Array.from({ length: 16 }, (_, i) => `member-${i}`);
-  expect(new Set(distinctSprites(ids).values()).size).toBe(16);
-});
-
-test("distinctSprites keeps an id's own creature unless an earlier id holds it", () => {
-  const ids = Array.from({ length: 40 }, (_, i) => `member-${i}`);
-  const a = ids[0]!;
-  const b = ids.find((id) => id !== a && spriteIndex(id) === spriteIndex(a))!;
-  const c = ids.find((id) => spriteIndex(id) !== spriteIndex(a))!;
-  const sprites = distinctSprites([a, b, c]);
-  expect(sprites.get(a)).toBe(spriteIndex(a));
-  expect(sprites.get(b)).not.toBe(spriteIndex(a));
-  expect(sprites.get(c)).toBe(spriteIndex(c));
-});
-
-test("appending an id never changes the creatures before it", () => {
-  const ids = Array.from({ length: 12 }, (_, i) => `member-${i}`);
-  const before = distinctSprites(ids.slice(0, 11));
-  const after = distinctSprites(ids);
-  for (const id of ids.slice(0, 11)) expect(after.get(id)).toBe(before.get(id));
-});
-
-test("past 16 ids, creatures repeat from each id's own", () => {
+test("a salt moves ids to different avatars", () => {
   const ids = Array.from({ length: 20 }, (_, i) => `member-${i}`);
-  const sprites = distinctSprites(ids);
-  expect(sprites.size).toBe(20);
-  expect(new Set(sprites.values()).size).toBe(16);
+  expect(ids.some((id) => invadr(id, { salt: "s" }) !== invadr(id))).toBe(true);
+});
+
+test("spriteIndex follows the salt", () => {
+  for (const id of ["ana", "ben", "cy"]) {
+    expect(resolveInvadr(id, { salt: "s" }).grid).toEqual(
+      spriteToGrid(INVADR_SPRITES[spriteIndex(id, "s")]!),
+    );
+  }
+});
+
+test("the color option picks a palette index, wrapping", () => {
+  const c = palettes.tokyoNight.colors;
+  expect(resolveInvadr("matt", { color: 2 }).color).toBe(c[2]!);
+  expect(resolveInvadr("matt", { color: 8 }).color).toBe(c[2]!);
+  expect(resolveInvadr("matt", { color: -1 }).color).toBe(c[5]!);
+  expect(resolveInvadr("matt", { color: 0 }).color).toBe(c[0]!);
+});
+
+test("non-finite color and sprite options fall back to the hashed pick", () => {
+  const plain = resolveInvadr("matt");
+  expect(resolveInvadr("matt", { color: NaN }).color).toBe(plain.color);
+  expect(resolveInvadr("matt", { sprite: NaN }).grid).toEqual(plain.grid);
+});
+
+test("the color option leaves the creature to the id", () => {
+  expect(resolveInvadr("matt", { color: 3 }).grid).toEqual(resolveInvadr("matt").grid);
 });

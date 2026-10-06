@@ -28,4 +28,13 @@ export type SpriteOptions = {
   /** `invadr` only: the creature to draw (0-15, wrapping), instead of the
       one the id hashes to. `spawn` ignores it. */
   sprite?: number;
+  /** Shifts every avatar to a different one. Empty means no salt. */
+  salt?: string;
+  /** The body color as a palette index (wrapping), instead of the one the
+      id hashes to. */
+  color?: number;
+  /** Fill the creature's enclosed holes (eyes, mouth) with a second color. */
+  accent?: boolean;
+  /** A faint background in a palette color. A `background` wins over it. */
+  tint?: boolean;
 };
