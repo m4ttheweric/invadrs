@@ -2,6 +2,7 @@ import { test, expect } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Invadr, Spawn, InvadrsProvider } from "./index.tsx";
 import { resolveInvadr } from "../invadr.ts";
+import { renderSvg } from "../render.ts";
 import { palettes } from "../palettes.ts";
 
 test("Invadr renders an inline svg with class, no size by default", () => {
@@ -51,6 +52,21 @@ test("Invadr renders accent and tint like the string renderer", () => {
   expect(html).toContain(`<g fill="${r.accent!.color}">`);
   const filled = r.grid.flat().filter(Boolean).length;
   expect(html.match(/<rect/g)!.length).toBe(1 + filled + r.accent!.cells.length);
+});
+
+test("Invadr renders unsnapped on the server, where nothing can be measured", () => {
+  const html = renderToStaticMarkup(<Invadr id="matt" />);
+  expect(html).toContain('viewBox="-1 -1 13 13"');
+});
+
+test("Invadr with size and pixelRatio matches the snapped string renderer", () => {
+  const svg = renderSvg(resolveInvadr("matt", { size: 20, pixelRatio: 1 }));
+  const html = renderToStaticMarkup(<Invadr id="matt" size={20} pixelRatio={1} />);
+  expect(html).toContain('viewBox="0 0 20 20"');
+  const rects = (s: string) =>
+    [...s.matchAll(/<rect x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)"/g)].map((m) => m.slice(1).join());
+  expect(rects(svg).length).toBeGreaterThan(0);
+  expect(rects(html)).toEqual(rects(svg));
 });
 
 test("color={0} overrides a provider color", () => {
