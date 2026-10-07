@@ -23,7 +23,7 @@ dataUri(invadr("matt"));              // data:image/svg+xml,...
 
 ## Options
 
-`{ size?, palette?, padding?, background?, title?, resolution?, sprite?, color?, salt?, accent?, tint? }`
+`{ size?, palette?, padding?, background?, title?, resolution?, sprite?, color?, salt?, accent?, tint?, pixelRatio? }`
 (`resolution` is `spawn`-only and `sprite` is `invadr`-only; when `size` is
 omitted no `width`/`height` is set, so host CSS controls the size.)
 
@@ -31,6 +31,12 @@ omitted no `width`/`height` is set, so host CSS controls the size.)
 (empty means none). `accent` fills the eyes and mouth with a second
 color. `tint` adds a faint background in a palette color (a `background`
 wins).
+
+`pixelRatio` with `size` puts every cell edge on a whole device pixel. At a
+size that does not divide the grid evenly (20px is 13 cells of about 1.5px),
+Safari draws each cell over every pixel it touches and fills in the eyes and
+gaps; snapped, it matches Chrome. Pass `window.devicePixelRatio`. The React
+components snap on their own.
 
 ## A distinct avatar per person
 
@@ -97,6 +103,11 @@ import { Invadr, Spawn, InvadrsProvider } from "invadrs/react";
 {/* app-wide defaults; explicit props on a component win */}
 <InvadrsProvider palette="tokyoNight" size={20}>…</InvadrsProvider>
 ```
+
+The components measure their drawn size and the screen's pixel ratio after
+mount and snap the cells to device pixels, so a CSS-sized avatar stays sharp
+with its eyes and gaps in every browser. A server render is unsnapped until
+it hydrates.
 
 ## Stability contract
 
