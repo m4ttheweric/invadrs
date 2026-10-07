@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { resolveCommon, renderSvg, dataUri } from "./render.ts";
+import { resolveCommon, renderSvg, dataUri, layout } from "./render.ts";
 import type { Grid } from "./types.ts";
 import { resolveInvadr } from "./invadr.ts";
 import { palettes } from "./palettes.ts";
@@ -103,4 +103,42 @@ test("renderSvg escapes every paint value", () => {
   const svg = renderSvg({ grid: g, color: bad, padding: 1, background: bad, tint: bad, accent: { color: bad, cells: [[1, 0]] } });
   expect(svg).not.toContain("<script>");
   expect(svg.match(/fill="x&quot;\/&gt;&lt;script&gt;"/g)!.length).toBe(4);
+});
+
+test("layout without a pixel ratio keeps grid coordinates", () => {
+  const l = layout(11, 1);
+  expect(l.viewBox).toBe("-1 -1 13 13");
+  expect(l.line(1)).toBe(0);
+  expect(l.line(12)).toBe(11);
+});
+
+test("layout with size and pixel ratio puts every grid line on a whole device pixel", () => {
+  for (const ratio of [1, 2, 3]) {
+    const l = layout(11, 1, 20, ratio);
+    expect(l.viewBox).toBe("0 0 20 20");
+    expect(l.line(0)).toBe(0);
+    expect(l.line(13)).toBe(20);
+    for (let i = 0; i < 13; i++) {
+      const a = l.line(i) * ratio;
+      const b = l.line(i + 1) * ratio;
+      expect(Math.abs(a - Math.round(a))).toBeLessThan(1e-9);
+      expect(b - a).toBeGreaterThanOrEqual(1 - 1e-9);
+    }
+  }
+});
+
+test("renderSvg snaps cells to whole pixels when given size and pixelRatio", () => {
+  const r = resolveInvadr("matt", { size: 20, pixelRatio: 1 });
+  const svg = renderSvg(r);
+  expect(svg).toContain('viewBox="0 0 20 20"');
+  expect(svg).toContain('width="20" height="20"');
+  const nums = [...svg.matchAll(/<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="([\d.]+)"/g)]
+    .flatMap((m) => m.slice(1).map(Number));
+  expect(nums.length).toBe(r.grid.flat().filter(Boolean).length * 4);
+  for (const v of nums) expect(Number.isInteger(v)).toBe(true);
+});
+
+test("renderSvg ignores pixelRatio without a size", () => {
+  const r = resolveInvadr("matt", { pixelRatio: 2 });
+  expect(renderSvg(r)).toBe(renderSvg(resolveInvadr("matt")));
 });

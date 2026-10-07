@@ -37,4 +37,9 @@ export type SpriteOptions = {
   accent?: boolean;
   /** A faint background in a palette color. A `background` wins over it. */
   tint?: boolean;
+  /** The screen's device pixel ratio. With `size`, every cell edge lands on
+      a whole device pixel, so Safari's crispEdges cannot grow the cells over
+      one-cell holes at sizes that do not divide evenly. `<Invadr>` and
+      `<Spawn>` measure this themselves. */
+  pixelRatio?: number;
 };
